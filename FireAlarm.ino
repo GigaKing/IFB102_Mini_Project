@@ -1,15 +1,21 @@
 // Flame Detector for Arduino Uno -- To be ported to the Raspberry Pi
 
 //Variables for setup and loop function
-int L_LED = 13;
-int fireDetector = 8;
+int fireDetector = D5;
 int val = LOW;
-int externalLED = 4;
-int buzzer = 7;
+int externalLED = D7;
+int buzzer = D6;
+
+bool on_fire = false;
 
 
 void activated() {
   //Variables for the message function
+    if (on_fire == false){
+        Particle.publish("fire");
+    }
+    on_fire = true;
+  
     digitalWrite(externalLED, HIGH);
     digitalWrite(buzzer, HIGH);  
     
@@ -18,6 +24,8 @@ void activated() {
 
 void deactivated() {
   //Variables for the message function
+    on_fire = false;
+    
     digitalWrite(externalLED, LOW);
     digitalWrite(buzzer, LOW);
     
@@ -27,7 +35,6 @@ void deactivated() {
 void setup() {
   // put your setup code here, to run once:
   pinMode(fireDetector, INPUT);
-  pinMode(L_LED, OUTPUT);
   pinMode(externalLED, OUTPUT);
   pinMode(buzzer, OUTPUT);
  
@@ -40,14 +47,13 @@ void loop() {
   if (val == HIGH)
   {
     Serial.print("Oh god, My house is on fire");
-    digitalWrite(L_LED, HIGH);
     activated();
     }
   else
   {
     Serial.print("There is no fire");
-    digitalWrite(L_LED, LOW);
     deactivated();
     
   }
+  delay(500);
 }
